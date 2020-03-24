@@ -6,19 +6,19 @@ Steps complete a ticket:
 1. Make a new branch:  
 `git checkout -b [branchname]`
 2. Update local master:  
-`git checkout master
-git pull`
+`git checkout master`  
+`git pull`  
 3. Rebase your new branch:  
-`git checkout [branchname]
-git rebase master`
+`git checkout [branchname]`  
+`git rebase master`  
 4. Do your amazing work (**make sure you are on your own branch**)
 5. Check for changes made before comitting your work:  
-`git checkout master  
-git pull`
+`git checkout master`    
+`git pull`  
 6. Get updated:  
 (if there were no changes in last step skip this step)  
-`git checkout [branchname]  
-git rebase master`
+`git checkout [branchname]`    
+`git rebase master`  
 7. Commit your changes:  
 if everything went well you can now commit  
 `git status` to see your changed files  
