@@ -11,7 +11,7 @@ Steps complete a ticket:
 3. Rebase your new branch:
 	`git checkout [branchname]
 	git rebase master`
-4. Do your amazing work (*make sure you are on your own branch*)
+4. Do your amazing work (**make sure you are on your own branch**)
 5. Check for changes made before comitting your work:
 	`git checkout master
 	git pull`
@@ -23,8 +23,8 @@ Steps complete a ticket:
 	if everything went well you can now commit
 	`git status` to see your changed files
 	`git add [file]` for each file that has changed
-	(*if the project uses local variables like passwords/usernames do not add these,
-	remove the hardcode/local variables in the code to make the file unchanged again.*)
+	(**if the project uses local variables like passwords/usernames do not add these,
+	remove the hardcode/local variables in the code to make the file unchanged again.**)
 	once everything is added you can commit
 	`git commit -m "your message"`" 
 	(When writing a message think "This commit..." in your head and continue the message)
@@ -34,8 +34,8 @@ Steps complete a ticket:
 	Once everything has run smoothly you can go to github and create a new Pull Request (a.k.a. PR)
 
 Last tip:
-`git status` can be run throughout the process to see what has changed and where you are standing
-Always make sure you know what branch you are on and *never* work on the master branch but *always* make a new branch!
+`git status` can be run throughout the process to see what has changed and where you are standing.
+Always make sure you know what branch you are on and **never** work on the master branch but **always** make a new branch!
 
 	
 
