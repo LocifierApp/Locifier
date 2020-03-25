@@ -1,9 +1,13 @@
 package com.locifierapp.locifier;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
+
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -13,14 +17,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.locifierapp.locifier.notification.ArrivalNotification;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-
-import java.sql.SQLOutput;
 
 public class MainActivity extends AppCompatActivity {
     private final static String notificationChannelId = "TestChannel";
@@ -49,6 +49,22 @@ public class MainActivity extends AppCompatActivity {
                 PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, intent, 0);
 
                 new ArrivalNotification(pendingIntent, MainActivity.this);
+
+
+                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+                Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    AudioAttributes aa = new AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_ALARM)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                            .build();
+                    ringtone.setAudioAttributes(aa);
+                } else {
+                    ringtone.setStreamType(AudioManager.STREAM_ALARM);
+                }
+                ringtone.play();
+
+
             }
         });
 
