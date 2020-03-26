@@ -38,36 +38,20 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
-        Button sendNotificationButton = (Button) findViewById(R.id.send_notification_button);
+        configureTestActivityButton();
+
+    }
+
+    private void configureTestActivityButton(){
+        Button sendNotificationButton = (Button) findViewById(R.id.test_activity_button);
+
         sendNotificationButton.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-
-                Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, intent, 0);
-
-                new ArrivalNotification(pendingIntent, MainActivity.this);
-
-
-                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-                Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    AudioAttributes aa = new AudioAttributes.Builder()
-                            .setUsage(AudioAttributes.USAGE_ALARM)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                            .build();
-                    ringtone.setAudioAttributes(aa);
-                } else {
-                    ringtone.setStreamType(AudioManager.STREAM_ALARM);
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(MainActivity.this, TestActivity.class));
                 }
-                ringtone.play();
-
-
-            }
         });
-
     }
 
 
