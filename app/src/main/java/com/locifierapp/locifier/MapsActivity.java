@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.locifierapp.locifier.map.AreaOnMap;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -38,19 +39,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LocationRequest mLocationRequest;
     private Location mLastLocation;
     private Marker mCurrLocationMarker;
-    private Marker leftBottomAreaMarker;
-    private Marker leftTopAreaMarker;
-    private Marker rightTopAreaMarker;
-    private Marker rightBottomAreaMarker;
     private FusedLocationProviderClient mFusedLocationClient;
     private AreaOnMap areaOnMap;
+    private List<Marker> markers = new ArrayList<Marker>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-
-        getSupportActionBar().setTitle("Map Location Activity");
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -110,46 +106,70 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
 
                 //Place current location marker
-                areaOnMap = new AreaOnMap(location);
 
-                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(latLng);
-                markerOptions.title("Current Position");
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-                mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11));
-                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                latLng = new LatLng(areaOnMap.getAreaLeftBottomCoordinates().getLongitude(), areaOnMap.getAreaLeftBottomCoordinates().getLatitude());
-                markerOptions.position(latLng);
-                markerOptions.title("Left Bottom");
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-                leftBottomAreaMarker = mGoogleMap.addMarker(markerOptions);
-
-
-                latLng = new LatLng(areaOnMap.getAreaLeftTopCoordinates().getLongitude(), areaOnMap.getAreaLeftTopCoordinates().getLatitude());
-                markerOptions.position(latLng);
-                markerOptions.title("Left Top");
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-                leftTopAreaMarker = mGoogleMap.addMarker(markerOptions);
-
-                latLng = new LatLng(areaOnMap.getAreaRightTopCoordinates().getLongitude(), areaOnMap.getAreaRightTopCoordinates().getLatitude());
-                markerOptions.position(latLng);
-                markerOptions.title("Right Top");
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-                rightTopAreaMarker = mGoogleMap.addMarker(markerOptions);
-
-                latLng = new LatLng(areaOnMap.getAreaRightBottomCoordinates().getLongitude(), areaOnMap.getAreaRightBottomCoordinates().getLatitude());
-                markerOptions.position(latLng);
-                markerOptions.title("Right Bottom");
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-                rightBottomAreaMarker = mGoogleMap.addMarker(markerOptions);
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //move map camera
+
+                mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                    @Override
+                    public void onMapClick(LatLng point) {
+                        //Add marker functionality
+                        if(markers!= null && !markers.isEmpty()){
+                            removeMarkers();
+                        }
+
+                        MarkerOptions marker = new MarkerOptions().position(new LatLng(point.latitude, point.longitude)).title("New Marker");
+                        markers.add(mGoogleMap.addMarker(marker));
+                        System.out.println(point.latitude+"---"+ point.longitude);
+                        Location location = new Location("Destination");
+                        location.setLongitude(point.longitude);
+                        location.setLatitude(point.latitude);
+                        areaOnMap = new AreaOnMap(location);
+
+                        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        MarkerOptions markerOptions = new MarkerOptions();
+                        markerOptions.position(latLng);
+                        markerOptions.title("Current Position");
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+                        markers.add(mGoogleMap.addMarker(markerOptions));
+                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11));
+                        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        latLng = new LatLng(areaOnMap.getAreaLeftBottomCoordinates().getLongitude(), areaOnMap.getAreaLeftBottomCoordinates().getLatitude());
+                        markerOptions.position(latLng);
+                        markerOptions.title("Left Bottom");
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+                        markers.add(mGoogleMap.addMarker(markerOptions));
+
+
+                        latLng = new LatLng(areaOnMap.getAreaLeftTopCoordinates().getLongitude(), areaOnMap.getAreaLeftTopCoordinates().getLatitude());
+                        markerOptions.position(latLng);
+                        markerOptions.title("Left Top");
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+                        markers.add(mGoogleMap.addMarker(markerOptions));
+
+                        latLng = new LatLng(areaOnMap.getAreaRightTopCoordinates().getLongitude(), areaOnMap.getAreaRightTopCoordinates().getLatitude());
+                        markerOptions.position(latLng);
+                        markerOptions.title("Right Top");
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+                        markers.add(mGoogleMap.addMarker(markerOptions));
+
+                        latLng = new LatLng(areaOnMap.getAreaRightBottomCoordinates().getLongitude(), areaOnMap.getAreaRightBottomCoordinates().getLatitude());
+                        markerOptions.position(latLng);
+                        markerOptions.title("Right Bottom");
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+                        markers.add(mGoogleMap.addMarker(markerOptions));
+                    }
+                });
 
             }
         }
     };
+
+    public void removeMarkers(){
+        for(Marker marker : markers){
+            marker.remove();
+        }
+    }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private void checkLocationPermission() {
