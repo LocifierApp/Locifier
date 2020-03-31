@@ -14,8 +14,9 @@ import com.locifierapp.locifier.MainActivity;
 import com.locifierapp.locifier.R;
 
 public class ArrivalNotification {
+    public static NotificationCompat.Builder arrivalNotification;
     public ArrivalNotification(PendingIntent pendingIntent, Context context) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NotificationChannelBuilder.ARRIVAL_NOTIFICATION_CHANNEL_ID)
+        arrivalNotification = new NotificationCompat.Builder(context, NotificationChannelBuilder.ARRIVAL_NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_message)
                 .setContentTitle("Arrived!")
                 .setContentText("You have arrived at your destination")
@@ -24,9 +25,10 @@ public class ArrivalNotification {
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
+
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 
         // notificationId is a unique int for each notification that you must define
-        notificationManager.notify(1, builder.build());
+        notificationManager.notify(1, arrivalNotification.build());
     }
 }
