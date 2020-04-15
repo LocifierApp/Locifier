@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (locationList.size() > 0) {
                 //The last location in the list is the newest
                 Location location = locationList.get(locationList.size() - 1);
-                if(userIsInRadius(new LatLng(location.getLatitude(), location.getLongitude()), new LatLng(destinationMarker.getPosition().latitude, destinationMarker.getPosition().longitude))){
+                if(destinationMarker != null && userIsInRadius(new LatLng(location.getLatitude(), location.getLongitude()), new LatLng(destinationMarker.getPosition().latitude, destinationMarker.getPosition().longitude))){
                     sendNotification();
                     Alarm.play(MainActivity.this);
                 }
