@@ -3,6 +3,7 @@ package com.locifierapp.locifier;
 
 import android.Manifest;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -14,7 +15,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -30,27 +30,27 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.locifierapp.locifier.alarm.Alarm;
 import com.locifierapp.locifier.notification.ArrivalNotification;
-
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.ui.AppBarConfiguration;
-
-import java.util.ArrayList;
 import java.util.List;
-
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+
     private GoogleMap googleMap;
     private SupportMapFragment mapFrag;
     private LocationRequest locationRequest;
     private Location lastLocation;
     private FusedLocationProviderClient fusedLocationProviderClient;
-
-    private List<Marker> markers = new ArrayList<Marker>();
-    private List<Circle> destinationRadius = new ArrayList<>();
+    private Marker destinationMarker;
+    private Circle destinationAreaCircle;
+    private LatLng destinationCoordinates;
 
 
     @Override
@@ -105,6 +105,46 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
             this.googleMap.setMyLocationEnabled(true);
         }
+
+        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng point) {
+                //Add marker functionality
+                if(destinationAreaCircle != null && destinationMarker != null){
+                    destinationAreaCircle.setVisible(false);
+                    destinationMarker.setVisible(false);
+                }
+                final Marker newDestinationMarker = addDestinationMarkerOnMap(point, MainActivity.this.googleMap);
+                final Circle newDestinationArea = addDestinationArea(point, MainActivity.this.googleMap);
+
+                //REFACTOR!
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Confirm destination")
+                        .setMessage("Is this where you want to wake up?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                if(destinationAreaCircle != null && destinationMarker != null){
+                                    removeMarkers();
+                                    removeDestinationCircle();
+                                }
+                                destinationMarker = newDestinationMarker;
+                                destinationAreaCircle = newDestinationArea;
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no,  new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                newDestinationMarker.remove();
+                                newDestinationArea.remove();
+                                if(destinationAreaCircle != null && destinationMarker != null){
+                                    destinationAreaCircle.setVisible(true);
+                                    destinationMarker.setVisible(true);
+                                }
+                            }
+                        })
+                        .setCancelable(false)
+                        .show();
+            }
+        });
     }
 
     LocationCallback locationCallback = new LocationCallback() {
@@ -115,56 +155,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 //The last location in the list is the newest
                 Location location = locationList.get(locationList.size() - 1);
                 lastLocation = location;
-
-                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                    @Override
-                    public void onMapClick(LatLng point) {
-                        //Add marker functionality
-
-                        removeMarkers();
-                        removeDestinationCircle();
-
-                        MarkerOptions marker = new MarkerOptions().position(new LatLng(point.latitude, point.longitude)).title("Destination");
-                        markers.add(googleMap.addMarker(marker));
-                        System.out.println(point.latitude+"---"+ point.longitude);
-                        Location location = new Location("Destination");
-                        location.setLongitude(point.longitude);
-                        location.setLatitude(point.latitude);
-
-                        destinationRadius.add(googleMap.addCircle(new CircleOptions().center(new LatLng(point.latitude, point.longitude)).radius(500).strokeWidth(3f).strokeColor(Color.RED).fillColor(Color.argb(70, 150, 50,50))));
-                        if(userIsInRadius(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), new LatLng(point.latitude, point.longitude))){
-                            sendNotification();
-                            Alarm.play(MainActivity.this);
-                        }
-                    }
-                });
-
+                if(userIsInRadius(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), new LatLng(destinationMarker.getPosition().latitude, destinationMarker.getPosition().longitude))){
+                    sendNotification();
+                    Alarm.play(MainActivity.this);
+                }
             }
         }
     };
-
-    public void removeMarkers(){
-        if(markers!= null && !markers.isEmpty()){
-            for(Marker marker : markers){
-                marker.remove();
-            }
-        }
-    }
-
-    public void removeDestinationCircle(){
-        if(destinationRadius!= null && !destinationRadius.isEmpty()){
-            for(Circle circle : destinationRadius){
-                circle.remove();
-            }
-        }
-    }
-
-    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    private void requestLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_LOCATION );
-        }
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
@@ -184,7 +181,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
 
             // other 'case' lines to check for other
-           // permissions this app might request
+            // permissions this app might request
+        }
+    }
+
+    public void removeMarkers(){
+        if(destinationMarker != null){
+            destinationMarker.remove();
+            destinationMarker = null;
+        }
+    }
+
+    public void removeDestinationCircle(){
+        if(destinationAreaCircle != null){
+            destinationAreaCircle.remove();
+            destinationAreaCircle = null;
+        }
+    }
+
+    private void requestLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_LOCATION );
         }
     }
 
@@ -244,7 +261,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return false;
     }
 
-
     private double distance(double lat1, double lon1, double lat2, double lon2) {
         double theta = lon1 - lon2;
         double dist = Math.sin(toRadians(lat1))
@@ -257,12 +273,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         dist = dist * 69 * 1.609344;
         return (dist);}
 
-        private void sendNotification(){
+    private void sendNotification(){
             Intent intent = new Intent(MainActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, intent, 0);
 
             new ArrivalNotification(pendingIntent, MainActivity.this);
         }
+
+    private Marker addDestinationMarkerOnMap(LatLng point, GoogleMap googleMap){
+            MarkerOptions marker = new MarkerOptions().position(new LatLng(point.latitude, point.longitude)).title("Destination");
+            return googleMap.addMarker(marker);
+        }
+
+    private Circle addDestinationArea(LatLng point, GoogleMap googleMap){
+          return googleMap.addCircle(new CircleOptions().center(new LatLng(point.latitude, point.longitude)).radius(500).strokeWidth(3f).strokeColor(Color.RED).fillColor(Color.argb(70, 150, 50,50)));
+       }
 
 }

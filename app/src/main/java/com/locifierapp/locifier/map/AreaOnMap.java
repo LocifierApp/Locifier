@@ -29,8 +29,6 @@ public class AreaOnMap {
         this.latDifferenceInDegrees = calculateLatDifferenceFromRadius();
         this.lonDifferenceInDegrees = calculateLonDifferenceFromRadius();
         setAreaCoordinates();
-
-
     }
 
     private double calculateLatDifferenceFromRadius() {
@@ -97,7 +95,6 @@ public class AreaOnMap {
     public Location getAreaLeftBottomCoordinates() {
         return areaLeftBottomCoordinates;
     }
-
 
     public void print(){
         System.out.println("Lat: " + areaLeftTopCoordinates.getLatitude() + "    Lon: " + areaLeftTopCoordinates.getLongitude());
