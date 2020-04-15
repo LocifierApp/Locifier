@@ -1,0 +1,32 @@
+
+N
+java:S1481>"8Remove this unused "appBarConfiguration" local variable.(ÒÚë²
+O
+java:S2440™"3Remove this instantiation of "ArrivalNotification".(šµÀãıÿÿÿÿ
+g
+java:S1301¨"KReplace this "switch" statement by "if" statements to increase readability.(×ö³–úÿÿÿÿ
+2
+java:S3626´"Remove this redundant jump.(ûÁİ…
+]
+java:S1854>"GRemove this useless assignment to local variable "appBarConfiguration".(ÒÚë²
+h
+java:S3776V"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(óêæï
+P
+java:S10685":Remove this unused "destinationCoordinates" private field.(ŞÀğ¢
+X
+java:S1126‚"AReplace this if-then-else statement by a single return statement.(–€§›
+=
+java:S1172‡"&Remove these unused method parameters.(¦Œœ¢
+[
+java:S3398"?Move this method into the anonymous class declared at line 150.(Å•ƒæúÿÿÿÿ
+I
+java:S1199©"-Extract this nested code block into a method.(èüü‚úÿÿÿÿ
+<
+java:S1172}"&Remove these unused method parameters.(¦Œœ¢
+=	java:S131¨""Add a default case to this switch.(×ö³–úÿÿÿÿ
+k
+java:S1450/"VRemove the "mapFrag" field and declare it as a local variable in the relevant methods.(—›ó
+V
+java:S3398”"?Move this method into the anonymous class declared at line 150.(íùÖÑ
+O
+java:S1197§"8Move the array designator from the variable to the type.(¯ÜÑñ

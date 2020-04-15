@@ -1,0 +1,19 @@
+
+k
+;app/src/main/java/com/locifierapp/locifier/alarm/Alarm.java,e\6\e6c9fd72172114e6017949502789020e9c5fcb43
+P
+ app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
+m
+=app/src/main/java/com/locifierapp/locifier/map/AreaOnMap.java,e\7\e7dd99924a5f23a0db812cfadf698341f27d98bc
+l
+<app/src/main/java/com/locifierapp/locifier/TestActivity.java,6\9\698a5b306eb98859356896a24b20654beca69a1b
+‡
+Wapp/src/main/java/com/locifierapp/locifier/notification/NotificationChannelBuilder.java,3\b\3b60900b6dd5fb26c601386de27fff4cd47e02a8
+€
+Papp/src/main/java/com/locifierapp/locifier/notification/ArrivalNotification.java,b\9\b9664a915891ffa03d1fcf6205c8e15178c9493a
+l
+<app/src/main/java/com/locifierapp/locifier/MainActivity.java,9\6\96cb9474f07053bafb64bb0dce056fcf09970703
+@
+app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
+w
+Gapp/src/main/java/com/locifierapp/locifier/service/LocationService.java,4\b\4b6ca9c97fd3999d640fed576df84a991bc908e3
