@@ -11,6 +11,7 @@
         android:id="@+id/map_fragment"
         android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
+    <!--Send notification button is temporary-->
     <Button
         android:id="@+id/test_activity_button"
         android:layout_width="227dp"

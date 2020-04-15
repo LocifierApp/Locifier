@@ -56,10 +56,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
-                .build();
-
 
         initializeMapFragment();
         configureTestActivityButton();
@@ -157,10 +153,40 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         }
+
+        private boolean userIsInRadius(LatLng currentUserCoordinates, LatLng destinationCoordinates){
+            if(distance(currentUserCoordinates.latitude, currentUserCoordinates.longitude, destinationCoordinates.latitude, destinationCoordinates.longitude) <= 0.5){
+                return true;
+            }
+            return false;
+        }
+
+        private double distance(double lat1, double lon1, double lat2, double lon2) {
+            double theta = lon1 - lon2;
+            double dist = Math.sin(toRadians(lat1))
+                    * Math.sin(toRadians(lat2))
+                    + Math.cos(toRadians(lat1))
+                    * Math.cos(toRadians(lat2))
+                    * Math.cos(toRadians(theta));
+            dist = Math.acos(dist);
+            dist = toDegrees(dist);
+            dist = dist * 69 * 1.609344;
+            return (dist);
+        }
+
+        private void sendNotification(){
+            Intent intent = new Intent(MainActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, intent, 0);
+
+            //No idea why it asks to remove this, if you remove it asks to remove the line above this one...
+            new ArrivalNotification(pendingIntent, MainActivity.this);
+        }
     };
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        // Ignore SonarLint by keeping it a switch instead of changing it to an if, other permission can easily be added now.
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
@@ -173,7 +199,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     // permission denied, boo! Disable the functionality that depends on this permission.
                     Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
                 }
-                return;
             }
 
             // other 'case' lines to check for other
@@ -240,7 +265,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void initializeMapFragment(){
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         SupportMapFragment mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-        mapFrag.getMapAsync(this);
+        if(mapFrag != null){
+            mapFrag.getMapAsync(this);
+        }
     }
 
     private void initializeLocationRequest(){
@@ -250,37 +277,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
     }
 
-    private boolean userIsInRadius(LatLng currentUserCoordinates, LatLng destinationCoordinates){
-        if(distance(currentUserCoordinates.latitude, currentUserCoordinates.longitude, destinationCoordinates.latitude, destinationCoordinates.longitude) <= 0.5){
-            return true;
-        }
-        return false;
-    }
-
-    private double distance(double lat1, double lon1, double lat2, double lon2) {
-        double theta = lon1 - lon2;
-        double dist = Math.sin(toRadians(lat1))
-                * Math.sin(toRadians(lat2))
-                + Math.cos(toRadians(lat1))
-                * Math.cos(toRadians(lat2))
-                * Math.cos(toRadians(theta));
-        dist = Math.acos(dist);
-        dist = toDegrees(dist);
-        dist = dist * 69 * 1.609344;
-        return (dist);}
-
-    private void sendNotification(){
-            Intent intent = new Intent(MainActivity.this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, intent, 0);
-
-            new ArrivalNotification(pendingIntent, MainActivity.this);
-        }
-
     private Marker addDestinationMarkerOnMap(LatLng point, GoogleMap googleMap){
             MarkerOptions marker = new MarkerOptions().position(new LatLng(point.latitude, point.longitude)).title("Destination");
             return googleMap.addMarker(marker);
-        }
+    }
 
     private Circle addDestinationArea(LatLng point, GoogleMap googleMap){
           return googleMap.addCircle(new CircleOptions().center(new LatLng(point.latitude, point.longitude)).radius(500).strokeWidth(3f).strokeColor(Color.RED).fillColor(Color.argb(70, 150, 50,50)));
