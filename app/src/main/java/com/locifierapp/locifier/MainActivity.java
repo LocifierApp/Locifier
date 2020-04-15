@@ -44,13 +44,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
 
     private GoogleMap googleMap;
-    private SupportMapFragment mapFrag;
     private LocationRequest locationRequest;
-    private Location lastLocation;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Marker destinationMarker;
     private Circle destinationAreaCircle;
-    private LatLng destinationCoordinates;
 
 
     @Override
@@ -154,8 +151,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (locationList.size() > 0) {
                 //The last location in the list is the newest
                 Location location = locationList.get(locationList.size() - 1);
-                lastLocation = location;
-                if(userIsInRadius(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), new LatLng(destinationMarker.getPosition().latitude, destinationMarker.getPosition().longitude))){
+                if(userIsInRadius(new LatLng(location.getLatitude(), location.getLongitude()), new LatLng(destinationMarker.getPosition().latitude, destinationMarker.getPosition().longitude))){
                     sendNotification();
                     Alarm.play(MainActivity.this);
                 }
@@ -243,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void initializeMapFragment(){
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+        SupportMapFragment mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
         mapFrag.getMapAsync(this);
     }
 
